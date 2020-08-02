@@ -7,12 +7,12 @@
     tools:context=".NotesEditorActivity">
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/editText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:ems="10"
+        android:gravity="top"
         android:inputType="textPersonName"
-        android:text="Name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
