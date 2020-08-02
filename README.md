@@ -1,4 +1,4 @@
 # Notes-App
 Simple Notes App for Android
 
-Made In 🇮🇳
+Made In INDIA
