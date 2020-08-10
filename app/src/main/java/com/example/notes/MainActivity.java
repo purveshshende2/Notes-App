@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,19 +18,30 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity {
 
    static ArrayList<String> notes = new ArrayList<>(); //for list View
    static ArrayAdapter arrayAdapter; // for all activities "static" is used
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sharedPreferences = getApplicationContext().getSharedPreferences("com.example.notes", Context.MODE_PRIVATE);
         /*for list view */
         ListView listView = findViewById(R.id.listView);
-        notes.add("Example note");
+        HashSet<String> set = (HashSet<String>) sharedPreferences.getStringSet("notes",null);
+
+        if (set == null){
+            notes.add("Example note");
+
+        } else {
+            notes = new ArrayList<>(set);
+        }
+
          arrayAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,notes);
         listView.setAdapter(arrayAdapter);
 
@@ -41,11 +54,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//       ----------------------------------------------------------------------------------------------------------
-//        for long press and delete that note
-        listView.getOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//        ************for long press and delete that note**************
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                final int itemToDelete = position; // final itemToDelete variable
                 new AlertDialog.Builder(MainActivity.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Are You Sure?")
@@ -53,17 +67,18 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                notes.remove(which);
+                                notes.remove(itemToDelete);
                                 arrayAdapter.notifyDataSetChanged();
+                                // same as NotesEditorActivity -------------->
+                                HashSet<String> set = new HashSet<>(MainActivity.notes);
+                                sharedPreferences.edit().putStringSet("notes",set).apply();
                             }
                         })
-                .setNegativeButton("No",null)
-                .show();
+                        .setNegativeButton("No",null)
+                        .show();
                 return true;
             }
-        }){
-
-        }
+        });
 
     }
 
